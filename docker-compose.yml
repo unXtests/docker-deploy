@@ -1,0 +1,51 @@
+version: '2'
+
+services:
+  nginx:
+    build: ./nginx
+    image: brunocascio/nginx
+    container_name: nginx
+    volumes_from:
+      - app
+    volumes:
+      - /var/log/nginx
+    ports:
+      - 80:80
+      - 443:443
+    links:
+      - fpm
+    depends_on:
+      - app
+    restart: always
+  fpm:
+    build: ./fpm
+    image: brunocascio/fpm
+    container_name: fpm
+    working_dir: /var/www/html/
+    volumes_from:
+      - app
+    depends_on:
+      - app
+    restart: always
+  app:
+    image: busybox
+    container_name: app
+    volumes:
+      - ./app/:/var/www/html
+  composer:
+    image: composer/composer:alpine
+    container_name: composer
+    command: ["install"]
+    working_dir: /var/www/html
+    volumes_from:
+      - app
+    depends_on:
+      - app
+  mysql:
+    image: mysql
+    container_name: mysql
+    volumes:
+      - /var/lib/mysql
+      - ./mysql/conf:/etc/mysql
+    env_file: ./mysql/.mysql_env
+    restart: always
