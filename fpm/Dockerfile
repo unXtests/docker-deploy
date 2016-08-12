@@ -2,7 +2,7 @@ FROM php:7-fpm-alpine
 
 MAINTAINER Bruno Cascio <brunocascio@gmail.com>
 
-RUN chown -R www-data:www-data /var/www/html \
+RUN chown -R 1001:www-data /var/www/html \
   && sed -ri 's/^www-data:x:82:82:/www-data:x:1000:50:/' /etc/passwd
 
 ADD ./unlp.ini /usr/local/etc/php/conf.d
